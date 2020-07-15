@@ -3,27 +3,30 @@ const mongoose = require('mongoose');
 
 
 const patientSchema = new mongoose.Schema({
-    number: {
-        type: number,
-        required: true,
-        unique: true
-    },
+    
     name: {
         type: String,
         required: true
     },
-    doctor: {
-        type:  mongoose.Schema.Types.ObjectId,
-        ref: 'Doctor'
 
-    }
+    phonenumber: {
+        type: Number,
+        required: true,
+        unique: true
+    },
+    
+
+    reports: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Patient-report",
+		},
+	],
+    
     
 }, {
     timestamps: true
 });
-
-
-
 
 
 
