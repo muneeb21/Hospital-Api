@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 
-
+// schema for every patient
 const patientSchema = new mongoose.Schema({
     
     name: {

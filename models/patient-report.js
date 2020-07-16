@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Doctor = require("./doctor.js");
 const Patient=require("./patient.js")
 
-// const { getCurrentIST } = require("../utils");
+// Schema for every report
 
 const PatientReportSchema = new mongoose.Schema({
 	doctor: {
@@ -16,7 +16,7 @@ const PatientReportSchema = new mongoose.Schema({
 		required: true,
 	},
 	date: {
-		type: Date,
+		type: String,
 		// Change UTC to IST
 		// default: getCurrentIST(),
 	},

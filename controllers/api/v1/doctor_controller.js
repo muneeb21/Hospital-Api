@@ -1,25 +1,31 @@
 const Doctor = require('../../../models/doctor');
 const jwt = require('jsonwebtoken');
-const bcrypt = require("bcryptjs");
 
 
 
+// login/sign up for a doctor
 
 module.exports.login = async function(req, res){
 
     try{
-        let docotr = await Doctor.findOne({email: req.body.email});
+        let doctor = await Doctor.findOne({email: req.body.email});
 
-        if (!doctor || doctor.password != req.body.password){
+        if (!doctor){
             return res.json(422, {
-                message: "Invalid username or password"
-            });
-        }
+                message: "Invalid username "
+			});
+			
+		}
 
+		// Comparing entered password with stored password
+		
+			if (req.body.password!=doctor.password){
+				return res.status(401).json({ message: "Invalid  Password" });
+			}
         return res.json(200, {
-            message: 'Sign in successful, here is your token, please keep it safe!',
+            message: 'Sign in successful',
             data:  {
-                token: jwt.sign(user.toJSON(), 'codeial', {expiresIn:  '100000'})
+                token: jwt.sign(doctor.toJSON(), 'codeial', {expiresIn:  '9000000000'})
             }
         })
 
@@ -34,13 +40,13 @@ module.exports.login = async function(req, res){
 
 
 
-// Register a new Doctor
+// Register a new doctor
 module.exports.register = async function(req, res)  {
 	try {
 		const { name, email, password } = req.body;
 		let doctor = await Doctor.findOne({email: req.body.email});
 
-		// If user is already Registered
+		// Check if user is already Registered
 		if (doctor) {
 			return res.status(200).json({
 				message:
@@ -48,20 +54,21 @@ module.exports.register = async function(req, res)  {
 			});
 		}
 
-		// Encrypt Password
-		const salt = await bcrypt.genSalt(10);
-		const hashedPwd = await bcrypt.hash(password, salt);
-
-		let newDoctor = await Doctor.create({ name, email, password: hashedPwd });
+		
+        //  Else register a new doctor
+		const newDoctor=await Doctor.create( { name, email, password });
 
 		
 
 		return res.status(200).json({
-			message: `Registration successful, token expires soon`,
+			message: `Registration successful`,
 			data:  {
-                token: jwt.sign(doctor.toJSON(), 'codeial', {expiresIn:  '100000'})
+                token: jwt.sign(newDoctor.toJSON(), 'codeial', {expiresIn:  '90000000000'})
             }
 		});
+
+	
+	
 
 	} catch (err) {
 		console.log('********',err);

@@ -1,21 +1,24 @@
 const Patient = require('../../../models/patient');
 const jwt = require('jsonwebtoken');
 const Report=require('../../../models/patient-report');
+// const { report } = require('../../../routes');
+
 
 // Register a new patient
+
 module.exports.register = async function(req, res)  {
 	try {
-		const { name, phonenumber, password } = req.body;
+		const { name, phonenumber } = req.body;
 		let patient = await Patient.findOne({phonenumber: req.body.phonenumber}).populate({
 			
-			// If patient already exists, populate all fields except patient and return existing records
+			// Populatinng necessary information
+			
 			path: "reports",
 			select: "-patient -__v",
-
-			// Dont populate Doctor's encrypted password in results
 			populate: { path: "doctor", select: "-password -__v" },
         });
 
+		
 		// If user is already Registered
 		if (patient) {
 			return res.status(200).json({
@@ -25,8 +28,8 @@ module.exports.register = async function(req, res)  {
 			});
 		}
 
-		
-        let newPatient = await Patient.create({name, phone });
+		// If patient is not registered then register 
+        let newPatient = await Patient.create({name, phonenumber });
 		
 
 		return res.status(200).json({
@@ -49,20 +52,19 @@ module.exports.register = async function(req, res)  {
 
 		
 
-
+// After registering a patient a doctor has to create a report
 
 module.exports.createReport = async function(req, res){
-    try {
-		
-
-		// if input is a valid MongoDB id 
+    try { 
 		
 		
 		let patient=await Patient.findById(req.params.id);
+		
+		// If patient id exists
 		if (!patient)
-			return res.status(200).json({ message: "Patient not registered, register the patient first" });
+			return res.status(200).json({ message: "Patient not registered" });
 
-
+        // Else adding creating a new report of patient and saving it
 		const reportData = {
 			status: req.body.status,
 			date: req.body.date,
@@ -70,11 +72,11 @@ module.exports.createReport = async function(req, res){
 			patient: patient,
 		};
 
-		// Add new Report
 		let report = await Report.create(reportData);
+		patient.reports.unshift(report);
         await patient.save();
 		
-		return res.status(200).json({ message: "Patient Report Added Successfully" });
+		return res.status(200).json({ message: "Patient Report Added " });
 	
 	
 	} catch (err) {
@@ -87,25 +89,24 @@ module.exports.createReport = async function(req, res){
 
 
 
-
+// Action for fetching all the reports of a patient
 module.exports.GetallReports = async function(req, res){
 
     try{
-		let patient = await (await Patient.findById(req.params.id)).sort('-createdAt')
-		.populate({
-			// Dont populate sensitive/redundant fields
+		let patient = await Patient.findById(req.params.id).populate({
+			// Populating necessary information
 			path: "reports",
 			select: "-patient -__v",
 			populate: { path: "doctor", select: "-password -__v" },
 		});
         
         
-
+        //   if patient exists then returning all reports
 		if(patient){
-            let reports = await patient.reports;
+			
             return res.status(200).json({
                 message:"List of all patient reports",
-                reports:reports
+                reports:patient.reports
             })
         }else{
             return res.status(200).json({
