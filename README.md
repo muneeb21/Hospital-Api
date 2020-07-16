@@ -1,7 +1,7 @@
 A design of an API for the doctors of a Hospital to keep details of testing, quarantine and well being of COVID-19 patients.
 
 Set up the project using command "npm init"
-Moreover you can also use postman for sending requests.
+Moreover, you can also use postman for sending requests.
 
 Theme of the api is as follows:-
 
@@ -19,9 +19,9 @@ Theme of the api is as follows:-
 
 
 FOLDER STRUCTURE EXPLAINATION
--> Actions of the api are stored in controllers/api.v1(version)
--> All the routes of api are stored in routes/api/v1(version)
--> In "models" folder there are 3 schemas
+- Actions of the api are stored in controllers/api.v1(version)
+- All the routes of api are stored in routes/api/v1(version)
+- In "models" folder there are 3 schemas
    -doctor(contains information of doctor)
    -patient(contains information of each patient and its report)
    -patient-report(contains all the reports)
